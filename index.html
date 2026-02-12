@@ -3,152 +3,266 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>💘 En fråga...</title>
+  <title>💘 En liten fråga...</title>
   <style>
     :root{
-      --bg1:#fff1f5; --bg2:#ffe4e6;
-      --card:#ffffffcc; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
-      --yes:#22c55e; --no:#ef4444;
+      --bg1:#ffe4f0;
+      --bg2:#ffd1dc;
+      --card:#ffffffd9;
+      --text:#111827;
+      --muted:#6b7280;
+      --border:#f1a7c3;
+      --yes:#22c55e;
+      --no:#ef4444;
+      --pink:#ff4d8d;
+      --purple:#7c3aed;
     }
     *{box-sizing:border-box}
     body{
-      margin:0; min-height:100vh; display:grid; place-items:center;
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color:var(--text);
       background: radial-gradient(circle at top, var(--bg1), var(--bg2));
       overflow:hidden;
     }
+
+    /* floating hearts layer */
+    .heart-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      overflow:hidden;
+    }
+    .h{
+      position:absolute;
+      bottom:-40px;
+      font-size:22px;
+      opacity:.9;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.12));
+      animation: floatUp linear forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp{
+      to{
+        transform: translateY(-120vh) translateX(var(--drift)) rotate(360deg);
+        opacity:0;
+      }
+    }
+
     .card{
-      width:min(92vw, 560px);
+      width:min(92vw, 620px);
       background:var(--card);
-      border:1px solid var(--border);
-      border-radius:22px;
+      border:2px solid rgba(255,77,141,.25);
+      border-radius:26px;
       padding:22px;
       text-align:center;
-      box-shadow:0 18px 60px rgba(0,0,0,.14);
+      box-shadow:0 18px 70px rgba(0,0,0,.16);
       backdrop-filter: blur(10px);
       position:relative;
       z-index:5;
     }
-    .title{ margin:0 0 8px; font-size:clamp(22px, 4vw, 34px); line-height:1.1; }
-    .subtitle{ margin:0 0 16px; color:var(--muted); font-size:14px; }
+
+    .title{
+      margin:0 0 8px;
+      font-size:clamp(24px, 4.2vw, 38px);
+      line-height:1.05;
+      letter-spacing:-0.5px;
+    }
+    .grad{
+      background: linear-gradient(90deg, var(--pink), var(--purple));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      font-weight:900;
+    }
+    .subtitle{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .spark{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin:10px 0 6px;
+      font-size:18px;
+    }
 
     .buttons{
-      display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:10px;
+      position:relative;
     }
     button{
-      border:1px solid var(--border);
+      border:0;
       padding:12px 18px;
       border-radius:999px;
       font-weight:900;
       cursor:pointer;
-      box-shadow:0 10px 22px rgba(0,0,0,.10);
+      box-shadow:0 12px 26px rgba(0,0,0,.14);
       transition: transform .12s ease, opacity .12s ease, filter .12s ease;
       user-select:none;
-      min-width:140px;
+      min-width:150px;
       font-size:16px;
     }
     button:active{ transform: scale(.98); }
-    #yesBtn{ background:var(--yes); color:white; position:relative; z-index:2; }
-    #noBtn { background:var(--no);  color:white; position:relative; z-index:1; }
+    #yesBtn{
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      color:white;
+      position:relative;
+      z-index:2;
+    }
+    #noBtn{
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+      color:white;
+      position:relative;
+      z-index:1;
+    }
 
-    .hint{ margin-top:12px; font-size:12px; color:var(--muted); }
+    .tiny{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
 
     /* Popup */
     .overlay{
-      position:fixed; inset:0;
-      display:none; place-items:center;
-      background: rgba(0,0,0,.40);
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.45);
       z-index:50;
       padding:18px;
     }
     .overlay.show{ display:grid; }
 
     .modal{
-      width:min(92vw, 650px);
+      width:min(92vw, 720px);
       background:#fff;
-      border-radius:22px;
+      border-radius:26px;
       overflow:hidden;
-      border:1px solid var(--border);
-      box-shadow:0 26px 90px rgba(0,0,0,.35);
+      border:2px solid rgba(255,77,141,.22);
+      box-shadow:0 26px 100px rgba(0,0,0,.38);
       text-align:center;
     }
     .modal .top{ padding:18px 18px 10px; }
-    .modal h2{ margin:0; font-size:22px; }
-    .modal p{ margin:6px 0 0; color:var(--muted); font-weight:700; }
+    .modal h2{ margin:0; font-size:24px; }
+    .modal p{ margin:6px 0 0; color:var(--muted); font-weight:800; }
     .modal img{ width:100%; height:auto; display:block; }
     .modal .closeRow{ padding:12px 14px 16px; }
     .modal .closeRow button{
-      background:#111827; color:white; border-color:#111827;
+      background:#111827; color:white;
       min-width:auto; padding:10px 14px; font-size:14px;
     }
 
     /* Fyrverkeri */
-    canvas#fx{ position:fixed; inset:0; z-index:60; pointer-events:none; display:none; }
+    canvas#fx{
+      position:fixed;
+      inset:0;
+      z-index:60;
+      pointer-events:none;
+      display:none;
+    }
     canvas#fx.show{ display:block; }
 
-    .pulse{ animation: pulse 0.8s ease-in-out infinite; }
-    @keyframes pulse{ 0%,100%{ filter: brightness(1); } 50%{ filter: brightness(1.06); } }
+    /* little silly effect when growth starts */
+    .wiggle{
+      animation: wiggle 0.7s ease-in-out infinite;
+    }
+    @keyframes wiggle{
+      0%,100%{ transform: scale(var(--s,1)) rotate(-1deg); }
+      50%{ transform: scale(var(--s,1)) rotate(1deg); }
+    }
   </style>
 </head>
 
 <body>
+  <div class="heart-layer" id="heartLayer"></div>
   <canvas id="fx"></canvas>
 
   <main class="card">
-    <h1 class="title" id="title">Vill du vara min Valentine? 💘</h1>
-    <p class="subtitle" id="subtitle">Det här är en helt normal hemsida. (I typ 5 sekunder.)</p>
+    <div class="spark">💗 💞 💘 💓 💕</div>
+    <h1 class="title">Hej <span class="grad">älskling</span> 💘</h1>
+    <p class="subtitle">Okej… seriöst… en SUPERviktig fråga 👀💗</p>
+
+    <h2 style="margin:10px 0 0; font-size:18px; font-weight:900;">
+      Vill du vara min Valentine? 💝
+    </h2>
 
     <div class="buttons">
-      <button id="yesBtn">JA 💖</button>
-      <button id="noBtn">NEJ 🙃</button>
+      <button id="yesBtn">JA!!! 💖💖💖</button>
+      <button id="noBtn">NEJ 😭</button>
     </div>
 
-    <div class="hint" id="hint">(Tips: lägg till ?namn=Emma i länken)</div>
+    <div class="tiny">💌 PS: Om du väntar 5 sek händer något… hehe 💘</div>
   </main>
 
   <div class="overlay" id="overlay" aria-hidden="true">
     <div class="modal">
       <div class="top">
-        <h2 id="modalTitle">🙂</h2>
-        <p id="modalText">...</p>
+        <h2 id="modalTitle">💘</h2>
+        <p id="modalText">💗</p>
       </div>
       <img id="modalImg" alt="bild" />
       <div class="closeRow">
-        <button id="closeBtn">Stäng</button>
+        <button id="closeBtn">Okej 💞</button>
       </div>
     </div>
   </div>
 
   <script>
-    /***************
-     * BILDER (lägg dessa filer bredvid index.html)
-     ***************/
-    const YES_IMG = "ja.jpeg";   // katten
-    const NO_IMG  = "nej.jpeg";  // den andra bilden
-
-    // Anpassning via URL: ?namn=Emma
-    const params = new URLSearchParams(location.search);
-    const namn = params.get("namn");
-    if (namn) {
-      document.getElementById("title").textContent = `Vill du vara min Valentine, ${namn}? 💘`;
-      document.getElementById("hint").textContent = `Hej ${namn} 😌`;
+    /*******************
+     * 1) Hjärt-regn (bakgrund)
+     *******************/
+    const heartLayer = document.getElementById("heartLayer");
+    const heartEmojis = ["💗","💖","💘","💞","💕","💓","💝","❤️","🫶"];
+    function spawnHeart(){
+      const d = document.createElement("div");
+      d.className = "h";
+      d.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+      d.style.left = (Math.random()*100) + "vw";
+      d.style.setProperty("--drift", (Math.random()*160 - 80) + "px");
+      d.style.fontSize = (16 + Math.random()*22) + "px";
+      d.style.animationDuration = (3.8 + Math.random()*3.6) + "s";
+      d.style.opacity = (0.55 + Math.random()*0.45).toFixed(2);
+      heartLayer.appendChild(d);
+      setTimeout(()=> d.remove(), 8500);
     }
+    // start
+    for(let i=0;i<14;i++) setTimeout(spawnHeart, i*120);
+    setInterval(spawnHeart, 220);
 
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn  = document.getElementById("noBtn");
+    /*******************
+     * 2) Bilder (anpassa om filnamn skiljer)
+     *******************/
+    const YES_IMG = "images-2.jpeg"; // katten
+    const NO_IMG  = "images.jpeg";   // "nej"-bilden
 
+    /*******************
+     * 3) Popup
+     *******************/
     const overlay = document.getElementById("overlay");
     const modalTitle = document.getElementById("modalTitle");
     const modalText  = document.getElementById("modalText");
     const modalImg   = document.getElementById("modalImg");
     const closeBtn   = document.getElementById("closeBtn");
 
-    function openModal({title, text, imgSrc, closeLabel="Stäng"}){
+    function openModal({title, text, imgSrc, closeLabel}){
       modalTitle.textContent = title;
       modalText.textContent = text;
       modalImg.src = imgSrc;
-      closeBtn.textContent = closeLabel;
+      closeBtn.textContent = closeLabel || "Okej 💞";
       overlay.classList.add("show");
       overlay.setAttribute("aria-hidden", "false");
     }
@@ -157,54 +271,67 @@
       overlay.setAttribute("aria-hidden", "true");
     }
     closeBtn.addEventListener("click", closeModal);
-    overlay.addEventListener("click", (e) => { if(e.target === overlay) closeModal(); });
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
 
-    /***************
-     * Efter 5 sek: JA växer och "äter" NEJ
-     ***************/
+    /*******************
+     * 4) JA äter NEJ efter 5 sek
+     *******************/
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+
     let growthTimer = setTimeout(() => {
       let yesScale = 1;
       let noScale  = 1;
 
-      yesBtn.classList.add("pulse");
+      yesBtn.classList.add("wiggle");
+      noBtn.classList.add("wiggle");
 
       const interval = setInterval(() => {
-        yesScale *= 1.06;   // JA blir större
-        noScale  *= 0.92;   // NEJ krymper
+        yesScale *= 1.07;
+        noScale  *= 0.90;
 
+        yesBtn.style.setProperty("--s", yesScale);
+        noBtn.style.setProperty("--s", noScale);
+
+        // match wiggle transform via CSS var
         yesBtn.style.transform = `scale(${yesScale})`;
         noBtn.style.transform  = `scale(${noScale})`;
 
-        const noOpacity = Math.max(0, (noScale - 0.15) / 0.85);
+        const noOpacity = Math.max(0, (noScale - 0.12) / 0.88);
         noBtn.style.opacity = String(noOpacity);
 
-        if (noScale < 0.18 || noOpacity <= 0.02) {
+        // lite textbus
+        if (yesScale > 1.6) yesBtn.textContent = "JA!! 💘💘💘";
+        if (yesScale > 2.2) yesBtn.textContent = "JA!!! 😈💘";
+        if (yesScale > 3.0) yesBtn.textContent = "JAAAAA 💖💥";
+
+        if (noScale < 0.16 || noOpacity <= 0.02) {
           noBtn.style.display = "none";
           clearInterval(interval);
         }
       }, 120);
     }, 5000);
 
-    /***************
-     * KLICKS
-     ***************/
+    /*******************
+     * 5) Klicks
+     *******************/
     yesBtn.addEventListener("click", () => {
       clearTimeout(growthTimer);
       noBtn.style.display = "none";
-      yesBtn.classList.remove("pulse");
+      yesBtn.classList.remove("wiggle");
+      noBtn.classList.remove("wiggle");
 
       openModal({
-        title: "YAAAAY 🥰",
-        text: "Okej då är det bestämt 💞",
+        title: "YAAAAY 🥰💖",
+        text: "Okej då är det bestämt!!! 💞💘💝",
         imgSrc: YES_IMG,
-        closeLabel: "Jag med 😌"
+        closeLabel: "Jag med 😌💗"
       });
 
-      // Fyrverkerier bara på JA
-      fireworksBurst(9);
+      fireworksBurst(10);
       let waves = 0;
       const waveInt = setInterval(() => {
-        fireworksBurst(6);
+        fireworksBurst(7);
         waves++;
         if (waves >= 5) clearInterval(waveInt);
       }, 520);
@@ -212,22 +339,24 @@
 
     noBtn.addEventListener("click", () => {
       clearTimeout(growthTimer);
-      yesBtn.classList.remove("pulse");
+      yesBtn.classList.remove("wiggle");
+      noBtn.classList.remove("wiggle");
 
       openModal({
-        title: "🤨",
-        text: "Intressant val…",
+        title: "🤨💔",
+        text: "…är du HELT säker? 😭💘",
         imgSrc: NO_IMG,
-        closeLabel: "Jag ångrar mig"
+        closeLabel: "Okej jag ångrar mig 😤💞"
       });
 
-      // Bonus: efter NEJ, gör JA lite större direkt (lite bus)
-      yesBtn.style.transform = `scale(${1.25})`;
+      // lite extra bus: gör JA större direkt
+      yesBtn.style.transform = "scale(1.25)";
+      yesBtn.textContent = "JA…? 💖";
     });
 
-    /***************
-     * Fyrverkerier (canvas)
-     ***************/
+    /*******************
+     * 6) Fyrverkerier (canvas)
+     *******************/
     const canvas = document.getElementById("fx");
     const ctx = canvas.getContext("2d");
     let particles = [];
@@ -244,9 +373,9 @@
     function fireworksBurst(count){
       canvas.classList.add("show");
       for(let i=0;i<count;i++){
-        const x = rand(0.15, 0.85) * window.innerWidth;
-        const y = rand(0.15, 0.55) * window.innerHeight;
-        explode(x, y, Math.floor(rand(45, 85)));
+        const x = rand(0.12, 0.88) * window.innerWidth;
+        const y = rand(0.10, 0.55) * window.innerHeight;
+        explode(x, y, Math.floor(rand(55, 95)));
       }
       if (!raf) raf = requestAnimationFrame(tick);
     }
@@ -254,14 +383,14 @@
     function explode(x, y, n){
       for(let i=0;i<n;i++){
         const a = Math.random() * Math.PI * 2;
-        const sp = rand(2.5, 7.5);
+        const sp = rand(2.2, 7.8);
         particles.push({
           x, y,
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp,
-          life: rand(35, 70),
+          life: rand(38, 78),
           age: 0,
-          size: rand(1.5, 3.5),
+          size: rand(1.4, 3.6),
           hue: Math.floor(Math.random() * 360)
         });
       }
@@ -277,15 +406,17 @@
         p.vy += 0.06;
         p.vx *= 0.985;
         p.vy *= 0.985;
+
         p.x += p.vx;
         p.y += p.vy;
 
         const t = 1 - (p.age / p.life);
         ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue}, 95%, 60%, ${Math.max(0, t)})`;
+        ctx.fillStyle = `hsla(${p.hue}, 95%, 62%, ${Math.max(0, t)})`;
         ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
         ctx.fill();
       }
+
       ctx.globalCompositeOperation = "source-over";
 
       if (particles.length > 0){
@@ -295,6 +426,7 @@
         raf = null;
       }
     }
+
     function rand(min, max){ return Math.random()*(max-min)+min; }
   </script>
 </body>
